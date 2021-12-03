@@ -1,0 +1,12 @@
+todo
+-user bepaling x
+-optional title x
+-public key x
+- uitloggen x 
+- unsubscribe x
+-delete account x
+- translations x
+- anonymise x
+- colors/icons x
+- ie
+- ux
