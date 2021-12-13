@@ -1,7 +1,7 @@
 var fs = require("fs");
 
 module adventday13pt1 {
-    const matrix: boolean[][] = [];
+    let matrix: boolean[][] = [];
     const text = fs.readFileSync("temp.txt", "utf-8");
     const split = text.split("\r\n");
 
@@ -39,13 +39,54 @@ module adventday13pt1 {
 
         for (let y = 0; y <= bottomMatrix.length; y++) {
             const columns: boolean[] = bottomMatrix[y];
-            columns.forEach((marked, index) => {
-                if (topMatrix[topMatrix.length - 1 - y])
-                    topMatrix[topMatrix.length - 1 - y][index] = columns[index];
+            columns.forEach((marked, columnIndex) => {
+                const topMatrixIndex = topMatrix.length - 1 - y;
+                if (topMatrixIndex > -1) {
+                    if (topMatrix[topMatrixIndex][columnIndex] === false)
+                        topMatrix[topMatrixIndex][columnIndex] = columns[columnIndex];
+                }
             });
         }
+        return topMatrix;
     }
 
-    //console.log(matrix);
-    console.log(foldUp(7))
+    const foldLeft = (x: number) => { // 5
+        const leftMatrix = [];
+        const rightMatrix = [];
+
+        matrix.forEach(row => {
+            leftMatrix.push(row.slice(0, x - 1));
+            rightMatrix.push(row.slice(x));
+        })
+        for (let y = 0; y <= rightMatrix.length; y++) {
+            const columns: boolean[] = rightMatrix[y];
+            console.log(columns)
+            columns.forEach((marked, columnIndex) => {
+                const leftMatrixIndex = columns.length - 1 - columnIndex;
+                if (leftMatrixIndex > -1) {
+                    if (leftMatrix[y][leftMatrixIndex] === false)
+                        leftMatrixIndex[y][leftMatrixIndex] = columns[columnIndex];
+                }
+            });
+        }
+        return leftMatrix;
+    }
+
+    const instructions = ["fold along y=7",
+        "fold along x=5"
+    ]
+
+
+    instructions.forEach(command => {
+        const index = parseInt(command.split("=")[1]);
+        if (command.indexOf("x") > -1) {
+            matrix = foldLeft(index)
+        }
+        if (command.indexOf("y") > -1) {
+
+            matrix = foldLeft(index)
+        }
+    });
+
+    console.log(_.flatten(matrix).filter(value => value === true).length);
 }
