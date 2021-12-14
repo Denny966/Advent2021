@@ -17,31 +17,66 @@ module adventday14pt1 {
         const polymer = value[0].split("");
         rules.push({ firstLetter: polymer[0], secondLetter: polymer[1], insertion: value[1] } as IRule);
     });
-
-    interface IBase {
+    interface IPosition {
         letter: string;
-        inserted: boolean;
+        position: number;
     }
 
+    const occurrences = (string: string, subString: string, allowOverlapping: boolean): number[] => {
+        if (subString.length <= 0)
+            return [];
 
-    const basePolymer: IBase[] = "NNCB".split("").map(letter => ({ letter, inserted: false }) as IBase);
+        var n = 0,
+            pos = 0,
+            step = allowOverlapping ? 1 : subString.length;
 
-    const applyRules = () => {
+        const indexes = [];
+        while (true) {
+            pos = string.indexOf(subString, pos);
+            if (pos >= 0) {
+                indexes.push(pos);
+                ++n;
+                pos += step;
+            } else break;
+        }
+        return indexes;
+    }
+
+    const applyRules = (input: string): string => {
+        const positions: IPosition[] = [];
         rules.forEach(rule => {
-            const firstLetterIndex = basePolymer.findIndex(polymer => polymer.letter == rule.firstLetter && !polymer.inserted);
-            const secondLetterIndex = basePolymer.findIndex((polymer, index) => polymer.letter == rule.secondLetter && !polymer.inserted && index > firstLetterIndex);
-console.log(firstLetterIndex, secondLetterIndex)
-            if (secondLetterIndex === firstLetterIndex + 1) {
-                basePolymer.splice(secondLetterIndex, 0, { letter: rule.insertion, inserted: true } as IBase);
-            }
+            const indexes = occurrences(input, rule.firstLetter + rule.secondLetter, true);
+            indexes.forEach(index => {
+                positions.push({
+                    letter: rule.insertion,
+                    position: index + 1
+                } as IPosition);
+            });
         });
-        basePolymer.forEach(polymer => {
-            polymer.inserted = false;
-        })
+
+        let result = input.split("");
+        positions.sort((a, b) => a.position - b.position).forEach((position, index) => {
+            result.splice(position.position + index, 0, position.letter);
+        });
+
+        return result.join("");
     }
 
-    applyRules();
 
-    console.log(basePolymer.map(polymer => polymer.letter).join(""))
+    let input = "KFVHFSSVNCSNHCPCNPVO";
+    for (let index = 1; index <= 10; index++) {
+        input = applyRules(input);
+    }
 
+    const counts: { [letter: string]: number } = {};
+    input.split("").forEach(letter => {
+        if (counts[letter]) counts[letter]++;
+        else counts[letter] = 1;
+    });
+
+    const values = Object.values(counts);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+
+    console.log(max - min);
 }
