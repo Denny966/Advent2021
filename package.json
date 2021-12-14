@@ -6,7 +6,9 @@
   "dependencies": {
     "lodash": "^4.17.21"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^16.11.12"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
